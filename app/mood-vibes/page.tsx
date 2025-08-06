@@ -60,6 +60,10 @@ export default function MoodVibesPage() {
 
   useEffect(() => {
     audioGenerator.current = new AudioGenerator()
+
+    return () => {
+      stopAllMusic()
+    }
   }, [])
 
   const selectMood = (index: number) => {
