@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AudioGenerator } from '@/utils/audio-generator'
 import { AudioToggle } from '@/components/audio-toggle'
-import { useSound } from '@/context/sound-provider' // ✅ IMPORT useSound
+import { useSound } from '@/components/sound-manager' // ✅ IMPORT useSound
 
 const moods = [
   {
