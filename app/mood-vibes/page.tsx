@@ -63,13 +63,12 @@ export default function MoodVibesPage() {
   const selectMood = (index: number) => {
     setSelectedMood(index)
     const mood = moods[index]
-    
-    // Play sparkle sound
+
     if (audioGenerator.current) {
-      audioGenerator.current.playSparkle()
+      audioGenerator.current.playSparkle() // sparkle sound stays
+      audioGenerator.current.playMoodMusic(mood.music) // vibe music
     }
-    
-    // Create particle animation
+
     const newParticles = Array.from({ length: 15 }, (_, i) => ({
       id: Date.now() + i,
       emoji: mood.particles[Math.floor(Math.random() * mood.particles.length)],
@@ -77,10 +76,9 @@ export default function MoodVibesPage() {
       y: Math.random() * 100,
       delay: Math.random() * 2
     }))
-    
+
     setParticles(newParticles)
-    
-    // Clear particles after animation
+
     setTimeout(() => {
       setParticles([])
     }, 4000)
@@ -89,6 +87,10 @@ export default function MoodVibesPage() {
   const resetMood = () => {
     setSelectedMood(null)
     setParticles([])
+
+    if (audioGenerator.current) {
+      audioGenerator.current.stopMoodMusic() // stop vibe music
+    }
   }
 
   return (
@@ -116,7 +118,6 @@ export default function MoodVibesPage() {
       ))}
 
       <div className="container mx-auto px-4 py-8 relative z-20">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/">
             <Button variant="ghost" className="text-purple-600 hover:text-purple-700">
@@ -124,7 +125,7 @@ export default function MoodVibesPage() {
               Back to Love Zone
             </Button>
           </Link>
-          
+
           {selectedMood !== null && (
             <Button 
               onClick={resetMood}
@@ -146,7 +147,6 @@ export default function MoodVibesPage() {
         </div>
 
         {selectedMood === null ? (
-          /* Mood Selection */
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto px-4">
             {moods.map((mood, index) => (
               <Card
@@ -162,8 +162,7 @@ export default function MoodVibesPage() {
                     <h3 className="text-xl sm:text-2xl font-bold mb-2">{mood.title}</h3>
                     <p className="text-white/90 text-base sm:text-lg">{mood.description}</p>
                   </div>
-                  
-                  {/* Hover Effects */}
+
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="absolute top-4 right-4 text-white animate-spin">✨</div>
                     <div className="absolute bottom-4 left-4 text-white animate-bounce">💫</div>
@@ -174,7 +173,6 @@ export default function MoodVibesPage() {
             ))}
           </div>
         ) : (
-          /* Selected Mood Display */
           <div className="text-center max-w-4xl mx-auto px-4">
             <div className="mb-8">
               <div className="text-6xl sm:text-7xl md:text-8xl mb-6 animate-bounce">
@@ -188,14 +186,12 @@ export default function MoodVibesPage() {
               </p>
             </div>
 
-            {/* Quote Display */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 mb-8 mx-4 sm:mx-0">
               <p className="text-lg sm:text-2xl md:text-3xl font-medium text-gray-700 italic leading-relaxed">
                 {moods[selectedMood].quote}
               </p>
             </div>
 
-            {/* Mood Visualization */}
             <div className={`
               w-full h-24 sm:h-32 rounded-2xl sm:rounded-3xl bg-gradient-to-r ${moods[selectedMood].gradient} 
               shadow-2xl relative overflow-hidden mb-8 mx-4 sm:mx-0
@@ -205,15 +201,13 @@ export default function MoodVibesPage() {
                   Your current love vibe ✨
                 </div>
               </div>
-              
-              {/* Animated elements */}
+
               <div className="absolute top-4 left-8 text-white animate-pulse">💕</div>
               <div className="absolute bottom-4 right-8 text-white animate-bounce">💖</div>
               <div className="absolute top-1/2 left-1/4 text-white animate-spin">✨</div>
               <div className="absolute top-1/4 right-1/4 text-white animate-pulse">💫</div>
             </div>
 
-            {/* Music Indicator */}
             <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <p className="text-lg text-gray-600 mb-2">Perfect music for this mood:</p>
               <p className="text-xl font-medium text-gray-700 capitalize">
