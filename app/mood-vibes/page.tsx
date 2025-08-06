@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AudioGenerator } from '@/utils/audio-generator'
 import { AudioToggle } from '@/components/audio-toggle'
+import { useSound } from '@/context/sound-provider' // ✅ IMPORT useSound
 
 const moods = [
   {
@@ -55,6 +56,7 @@ export default function MoodVibesPage() {
   const [selectedMood, setSelectedMood] = useState<number | null>(null)
   const [particles, setParticles] = useState<Array<{ id: number; emoji: string; x: number; y: number; delay: number }>>([])
   const audioGenerator = useRef<AudioGenerator | null>(null)
+  const { playMusic, stopAllMusic } = useSound() // ✅ from SoundProvider
 
   useEffect(() => {
     audioGenerator.current = new AudioGenerator()
@@ -64,11 +66,15 @@ export default function MoodVibesPage() {
     setSelectedMood(index)
     const mood = moods[index]
 
+    // ✅ Sparkle (keep using AudioGenerator)
     if (audioGenerator.current) {
-      audioGenerator.current.playSparkle() // sparkle sound stays
-      audioGenerator.current.playMoodMusic(mood.music) // vibe music
+      audioGenerator.current.playSparkle()
     }
 
+    // ✅ Play background music
+    playMusic(mood.music)
+
+    // Particle effects
     const newParticles = Array.from({ length: 15 }, (_, i) => ({
       id: Date.now() + i,
       emoji: mood.particles[Math.floor(Math.random() * mood.particles.length)],
@@ -76,7 +82,6 @@ export default function MoodVibesPage() {
       y: Math.random() * 100,
       delay: Math.random() * 2
     }))
-
     setParticles(newParticles)
 
     setTimeout(() => {
@@ -87,10 +92,7 @@ export default function MoodVibesPage() {
   const resetMood = () => {
     setSelectedMood(null)
     setParticles([])
-
-    if (audioGenerator.current) {
-      audioGenerator.current.stopMoodMusic() // stop vibe music
-    }
+    stopAllMusic() // ✅ Stop music on reset
   }
 
   return (
@@ -118,6 +120,7 @@ export default function MoodVibesPage() {
       ))}
 
       <div className="container mx-auto px-4 py-8 relative z-20">
+        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/">
             <Button variant="ghost" className="text-purple-600 hover:text-purple-700">
@@ -125,7 +128,7 @@ export default function MoodVibesPage() {
               Back to Love Zone
             </Button>
           </Link>
-
+          
           {selectedMood !== null && (
             <Button 
               onClick={resetMood}
@@ -162,7 +165,6 @@ export default function MoodVibesPage() {
                     <h3 className="text-xl sm:text-2xl font-bold mb-2">{mood.title}</h3>
                     <p className="text-white/90 text-base sm:text-lg">{mood.description}</p>
                   </div>
-
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                     <div className="absolute top-4 right-4 text-white animate-spin">✨</div>
                     <div className="absolute bottom-4 left-4 text-white animate-bounce">💫</div>
@@ -201,7 +203,6 @@ export default function MoodVibesPage() {
                   Your current love vibe ✨
                 </div>
               </div>
-
               <div className="absolute top-4 left-8 text-white animate-pulse">💕</div>
               <div className="absolute bottom-4 right-8 text-white animate-bounce">💖</div>
               <div className="absolute top-1/2 left-1/4 text-white animate-spin">✨</div>
@@ -217,6 +218,7 @@ export default function MoodVibesPage() {
           </div>
         )}
       </div>
+
       <AudioToggle />
     </div>
   )
